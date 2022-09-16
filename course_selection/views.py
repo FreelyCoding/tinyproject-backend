@@ -14,7 +14,7 @@ def return_info(string, error=""):
         t["string"] = string
     if error != "":
         t["error"] = error
-    return json.dumps(t)
+    return json.dumps(t, ensure_ascii=False)
 
 
 def get_student(student_id):
@@ -45,7 +45,8 @@ def to_course(t: tuple):
 def student_add(request):
     # POST
     if request.method != 'POST':
-        return HttpResponse(status=403, content=json.dumps({"string": "选课失败", "err": "未知错误"}))
+        return HttpResponse(status=403, content=json.dumps({"string": "选课失败", "err": "未知错误"},
+                                                           ensure_ascii=False))
 
     try:
         print(json.loads(request.body))
@@ -54,7 +55,8 @@ def student_add(request):
         course_id = info['course_id']
 
         if student_id is None or course_id is None:
-            return HttpResponse(status_code=403, content=json.dumps({"string": "选课失败", "err": "未知错误"}))
+            return HttpResponse(status_code=403, content=json.dumps({"string": "选课失败", "err": "未知错误"},
+                                                                    ensure_ascii=False))
 
         student = get_student(student_id)
         print(student)
@@ -62,15 +64,18 @@ def student_add(request):
         print(course)
 
         if student is None:
-            return HttpResponse(status=402, content=json.dumps({"string": "选课失败", "err": "学生不存在"}))
+            return HttpResponse(status=402, content=json.dumps({"string": "选课失败", "err": "学生不存在"},
+                                                               ensure_ascii=False))
         elif course is None:
-            return HttpResponse(status=402, content=json.dumps({"string": "选课失败", "err": "课程不存在"}))
+            return HttpResponse(status=402, content=json.dumps({"string": "选课失败", "err": "课程不存在"},
+                                                               ensure_ascii=False))
 
         max_capacity = course[5]
         cur_capacity = course[6]
 
         if cur_capacity >= max_capacity:
-            return HttpResponse(status=401, content=json.dumps({"string": "选课失败", "err": "容量已满"}))
+            return HttpResponse(status=401, content=json.dumps({"string": "选课失败", "err": "容量已满"},
+                                                               ensure_ascii=False))
 
         cursor = connection.cursor()
         sql = "SELECT * FROM selection WHERE student_id = %s AND course_id = %s" \
@@ -78,7 +83,7 @@ def student_add(request):
         cursor.execute(sql)
 
         if cursor.fetchone() is not None:
-            return HttpResponse(status=200, content=json.dumps({"string": "选课成功"}))
+            return HttpResponse(status=200, content=json.dumps({"string": "选课成功"}, ensure_ascii=False))
 
         sql = "INSERT INTO selection (student_id, course_id) " \
               "VALUES (%s, %s);" % (quote(student_id), quote(course_id))
@@ -88,10 +93,11 @@ def student_add(request):
               "WHERE course_id = %s;" % (quote(cur_capacity + 1), quote(course_id))
         cursor.execute(sql)
 
-        return HttpResponse(status=200, content=json.dumps({"string": "选课成功"}))
+        return HttpResponse(status=200, content=json.dumps({"string": "选课成功"}, ensure_ascii=False))
 
     except:
-        return HttpResponse(status=403, content=json.dumps({"string": "选课失败", "err": "未知错误"}))
+        return HttpResponse(status=403, content=json.dumps({"string": "选课失败", "err": "未知错误"},
+                                                           ensure_ascii=False))
 
 
 def student_query(request):
@@ -116,7 +122,7 @@ def student_query(request):
         for i in courses:
             l.append(to_course(i))
 
-        return HttpResponse(status=200, content=json.dumps(l))
+        return HttpResponse(status=200, content=json.dumps(l, ensure_ascii=False))
 
     except:
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -183,7 +189,7 @@ def student_profile(request):
         for i in range(1, len(student)):
             t[arr[i]] = student[i]
 
-        return HttpResponse(status=200, content=json.dumps(t))
+        return HttpResponse(status=200, content=json.dumps(t, ensure_ascii=False))
 
     except:
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -248,7 +254,7 @@ def course_profile(request):
         for i in range(1, len(course)):
             t[arr[i]] = course[i]
 
-        return HttpResponse(status=200, content=json.dumps(t))
+        return HttpResponse(status=200, content=json.dumps(t, ensure_ascii=False))
 
     except:
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -319,7 +325,7 @@ def student_all(request):
 
             student_list.append(d)
 
-        return HttpResponse(status=200, content=json.dumps(student_list))
+        return HttpResponse(status=200, content=json.dumps(student_list, ensure_ascii=False))
 
     except:
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -347,7 +353,7 @@ def course_all(request):
 
             course_list.append(d)
 
-        return HttpResponse(status=200, content=json.dumps(course_list))
+        return HttpResponse(status=200, content=json.dumps(course_list, ensure_ascii=False))
 
     except:
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
