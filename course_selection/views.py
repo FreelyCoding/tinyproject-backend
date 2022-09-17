@@ -58,7 +58,7 @@ def student_add(request):
                                                            ensure_ascii=False))
 
     try:
-        print(json.loads(request.body))
+        # print(json.loads(request.body))
         info = json.loads(request.body)
         student_id = info['student_id']
         course_id = info['course_id']
@@ -68,9 +68,9 @@ def student_add(request):
                                                                     ensure_ascii=False))
 
         student = get_student(student_id)
-        print(student)
+        # print(student)
         course = get_course(course_id)
-        print(course)
+        # rint(course)
 
         if student is None:
             return HttpResponse(status=402, content=json.dumps({"string": "选课失败", "err": "学生不存在"},
@@ -115,7 +115,7 @@ def student_query(request):
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
 
     try:
-        print(request.GET)
+        # print(request.GET)
         student_id = str(request.GET["student_id"])
         if student_id is None:
             return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -126,7 +126,7 @@ def student_query(request):
         cursor.execute(sql)
 
         courses = cursor.fetchall()
-        print(courses)
+        # print(courses)
         l = []
         for i in courses:
             l.append(to_course(i))
@@ -138,7 +138,7 @@ def student_query(request):
 
 
 def student_delete(request):
-    #POST
+    # POST
     if request.method != 'POST':
         return HttpResponse(status=403, content=return_info("未知错误"))
 
@@ -200,7 +200,7 @@ def student_selectable(request):
         # c.course_id NOT IN (SELECT s.course_id FROM selection AS s WHERE s.student_id = '20230000')
 
         courses = cursor.fetchall()
-        print(courses)
+        # print(courses)
 
         l = []
         for i in courses:
@@ -238,7 +238,7 @@ def student_profile(request):
 
 
 def student_update(request):
-    #POST
+    # POST
     if request.method != 'POST':
         return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
 
@@ -264,7 +264,7 @@ def student_update(request):
         sql = sql.strip(",")
 
         sql += "WHERE student_id = %s;" % quote(student_id)
-        print(sql)
+        # print(sql)
 
         cursor.execute(sql)
 
@@ -325,7 +325,7 @@ def course_update(request):
         cursor = connection.cursor()
         sql = "UPDATE course SET "
         for key in arr:
-            print(key)
+            # print(key)
             if key not in info:
                 continue
             sql += key + "=" + quote(info[key]) + ","
@@ -333,7 +333,7 @@ def course_update(request):
         sql = sql.strip(",")
 
         sql += "WHERE course_id = %s;" % quote(course_id)
-        print(sql)
+        # print(sql)
 
         cursor.execute(sql)
 
@@ -376,7 +376,7 @@ def course_query(request):
 
 
 def student_all(request):
-    #GET
+    # GET
     if request.method != 'GET':
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
 
@@ -404,7 +404,7 @@ def student_all(request):
 
 
 def course_all(request):
-    #GET
+    # GET
     if request.method != 'GET':
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
 
