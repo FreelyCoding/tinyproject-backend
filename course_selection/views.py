@@ -275,14 +275,12 @@ def student_update(request):
 
 
 def course_profile(request):
-    #POST
-    if request.method != 'POST':
+    # GET
+    if request.method != 'GET':
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
 
     try:
-        info = json.loads(request.body)
-
-        course_id = info['course_id']
+        course_id = request.GET["course_id"]
 
         if course_id is None:
             return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
