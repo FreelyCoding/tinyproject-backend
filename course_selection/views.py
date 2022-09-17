@@ -301,7 +301,7 @@ def course_profile(request):
 
 
 def course_update(request):
-    #POST
+    # POST
     if request.method != 'POST':
         return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
 
@@ -312,8 +312,8 @@ def course_update(request):
         course_id = info['course_id']
 
         # 不可修改容量
-        # if "max_capacity" in info or "cur_capacity" in info:
-        #     return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
+        if "max_capacity" in info or "cur_capacity" in info:
+            return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
 
         if course_id is None:
             return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
