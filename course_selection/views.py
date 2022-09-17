@@ -42,6 +42,15 @@ def to_course(t: tuple):
     return ans
 
 
+def to_student(t: tuple):
+    arr = ["id", "student_id", "name", "college_grade", "major", "class", "email"]
+
+    ans = {}
+    for i in range(1, len(arr)):
+        ans[arr[i]] = t[i]
+    return ans
+
+
 def student_add(request):
     # POST
     if request.method != 'POST':
@@ -266,14 +275,12 @@ def student_update(request):
 
 
 def course_profile(request):
-    #POST
-    if request.method != 'POST':
+    # GET
+    if request.method != 'GET':
         return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
 
     try:
-        info = json.loads(request.body)
-
-        course_id = info['course_id']
+        course_id = request.GET["course_id"]
 
         if course_id is None:
             return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
@@ -334,6 +341,38 @@ def course_update(request):
 
     except:
         return HttpResponse(status=401, content=return_info("修改失败", "未知错误"))
+
+
+def course_query(request):
+    # GET
+    if request.method != 'GET':
+        return HttpResponse(status=402, content=return_info("查询失败", "未知错误"))
+
+    try:
+        course_id = request.GET['course_id']
+        if course_id is None:
+            return HttpResponse(status=402, content=return_info("查询失败", "未知错误"))
+
+        course = get_course(course_id)
+        if course is None:
+            return HttpResponse(status=401, content=return_info("查询失败", "课程不存在"))
+
+        cursor = connection.cursor()
+        sql = "SELECT stu.* FROM student AS stu JOIN selection AS sel ON " \
+              "sel.course_id = %s AND stu.student_id = sel.student_id" % (quote(course_id))
+
+        cursor.execute(sql)
+
+        students = cursor.fetchall()
+
+        l = []
+        for student in students:
+            l.append(to_student(student))
+
+        return HttpResponse(status=200, content=json.dumps(l, ensure_ascii=False))
+
+    except:
+        return HttpResponse(status=402, content=return_info("查询失败", "未知错误"))
 
 
 def student_all(request):
