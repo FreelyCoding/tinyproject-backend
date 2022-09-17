@@ -24,6 +24,7 @@ urlpatterns = [
     path("student/del", views.student_delete),
     path("student/profile", views.student_profile),
     path("student/update", views.student_update),
+    path("student/selectable", views.student_selectable),
     path("course/profile", views.course_profile),
     path("course/update", views.course_update),
     path("student/all", views.student_all),

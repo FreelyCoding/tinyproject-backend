@@ -170,6 +170,39 @@ def student_delete(request):
         return HttpResponse(status=403, content=return_info("未知错误"))
 
 
+def student_selectable(request):
+    # GET
+    if request.method != "GET":
+        return HttpResponse(status=401, content=return_info("未知错误"))
+
+    try:
+        student_id = request.GET["student_id"]
+        if student_id is None:
+            return HttpResponse(status=401, content=return_info("查询失败", "未知错误"))
+
+        # 目前学生学号不存在时会返回所有课程
+        cursor = connection.cursor()
+        sql = "SELECT c.*  FROM course AS c WHERE c.cur_capacity < c.max_capacity AND " \
+              "c.course_id NOT IN (SELECT s.course_id FROM selection AS s WHERE s.student_id = %s);" % quote(student_id)
+
+        cursor.execute(sql)
+
+        # SELECT c.course_id  FROM course AS c WHERE c.cur_capacity < c.max_capacity AND
+        # c.course_id NOT IN (SELECT s.course_id FROM selection AS s WHERE s.student_id = '20230000')
+
+        courses = cursor.fetchall()
+        print(courses)
+
+        l = []
+        for i in courses:
+            l.append(to_course(i))
+
+        return HttpResponse(status=200, content=json.dumps(l, ensure_ascii=False))
+
+    except:
+        return HttpResponse(status=401, content=return_info("未知错误"))
+
+
 def student_profile(request):
     # GET
     if request.method != 'GET':
