@@ -81,7 +81,7 @@ DATABASES = {
         "HOST": "127.0.0.1",
         "PORT": 3306,
         "USER": "root",
-        "PASSWORD": "" # Your Password Here
+        "PASSWORD": "123456" # Your Password Here
     }
 }
 
